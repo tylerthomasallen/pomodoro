@@ -8,14 +8,17 @@ class Container extends Component {
         super(props);
         this.state = {
             seconds: 0,
-            displayedTime: '00:00'
+            displayedTime: '00:00',
+            ticking: false
         }
-        // this.tickingClock = this.tickingClock.bind(this);
-        // this.tick = this.tick.bind(this);
+        
         this.convertSecondsToTime = this.convertSecondsToTime.bind(this);
+        this.startTimer = this.startTimer.bind(this);
+        this.stopTimer = this.stopTimer.bind(this);
     }
 
     changeTime = async (name) => {
+        await this.stopTimer();
         const seconds = name === POM_TIMER ? POM_TIME : SHORT_BREAK_TIME;
         if (this.state.seconds !== seconds) {
             await this.setState({seconds});
@@ -27,21 +30,28 @@ class Container extends Component {
         }
     }
 
-    tickingClock() {
-        if (this.state.seconds >= 1) {
-            setInterval(this.tick, 1000);
-        }
+    async startTimer() {
+        await this.setState({ticking: true});
+        const myTimer = setInterval( async () => {
+            if(this.state.ticking && this.state.seconds >= 1) {
+                await this.setState({ seconds: this.state.seconds - 1 });
+                const displayedTime = this.convertSecondsToTime();
+                await this.setState({ displayedTime }) 
+            } else {
+                clearInterval(myTimer);
+            }
+        }, 1000);
+
+
     }
 
-    tick() {
-        this.setState({seconds: this.state.seconds - 1});
-        const displayedTime = this.convertSecondsToTime();
-        this.setState({displayedTime})
+    async stopTimer() {
+        await this.setState({ticking: false})
     }
 
     convertSecondsToTime() {
-        let minutes = this.state.seconds % 60;
-        let seconds = Math.floor(this.state.seconds / 60);
+        let minutes = Math.floor(this.state.seconds / 60);
+        let seconds = this.state.seconds % 60;
 
         if (seconds < 10) {
             seconds = `0${seconds}`
@@ -52,10 +62,10 @@ class Container extends Component {
 
     render() {
         return(
-            <div class="container">
+            <div className="container">
                 <Button name={POM_TIMER} changeTime={this.changeTime} />
                 <Button name={SHORT_BREAK} changeTime={this.changeTime} />
-                <Timer time={this.state.displayedTime} />
+                <Timer time={this.state.displayedTime} startTimer={this.startTimer} stopTimer={this.stopTimer}/>
             </div>
         )
     }
