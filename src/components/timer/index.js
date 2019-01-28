@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 
 class Timer extends Component {
     render() {
+        const { time } = this.props;
         return(
-            <div>
-                Timer
-            </div>
+            <div className="timer">{time}</div>
         )
     }
 }
