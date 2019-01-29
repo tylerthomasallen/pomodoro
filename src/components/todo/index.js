@@ -22,23 +22,21 @@ class ToDo extends Component {
         list.push(input);
         this.setState({list});
         this.setState({input: ''});
-        debugger;
     }
 
     render() {
-        debugger;
         return(
             <div className="todo-list">
-                <h1>Todo List</h1>
+                <h1>To-do List</h1>
                 <form onSubmit={this.handleSubmit}>
                     <input type="text" value={this.state.input} onChange={this.updateInput}></input>
                     <input type="submit" value="Add Task" />
                 </form>
-                <div className="todo-items">
+                <label className="todo-items-container">
                     {this.state.list.map((todo, i) => {
-                        return <h2 key={i}>{todo}</h2>
+                        return <input type="checkbox" key={i}>{todo}</input>
                     })}
-                </div>
+                </label>
             </div>
         )
     }
